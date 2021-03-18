@@ -2,17 +2,18 @@ const fetch = require("node-fetch")
 const { relative } = require("path")
 const process = require('process')
 const secrets = require("./secrets.js")
+// qui si possono vedere dal browser i risultati "192.168.1.231:8080/risultati/viewer"
+
 /*
-dentro al file secrets:
 const secrets = {}
-secrets.nome = ""
+secrets.name = {
+    nome:""
 }
 secrets.ipAddress = ""
 module.exports = secrets
-
 */
-// qui si possono vedere dal browser i risultati "192.168.1.231:8080/risultati/viewer"
-const credenziali = secrets.nome
+
+const credenziali = secrets.name
 const ipAddress = secrets.ipAddress
 function accreditamento(obj){
     fetch(ipAddress+":8080/accreditamento", {
@@ -25,72 +26,81 @@ function accreditamento(obj){
     .catch(err => console.log(err))
 }
 
-accreditamento(credenziali)
-
 function removeItemOnce(arr, value) {
-    let index = arr.indexOf(value);
+    var index = arr.indexOf(value);
     if (index > -1) {
       arr.splice(index, 1);
     }
     return arr;
   }
 
+
 function exercises(es, data){
     let risultato = []
     switch(es){
+        case 0:
+            accreditamento(credenziali)
         case 1:
             return data.toLowerCase()
             break;
         case 2:
-            return data*data
-            break
-        case 3:
-            return data["cognome"]
-            break
-        case 4:
-            return data.length
-            break
-        case 5:
-            return risultato = data.map( (e) => {
-                return e.toUpperCase()
-            })
-            break
-        case 6:
-            return data.reduce( (somma, e) => {
-                return somma+e
-            })
-            break
-        case 7:
-            risultato = data.reduce( (somma, e) => {
-                    if (e>5){
-                        somma+=e
-                    } 
-                    return somma
-
-                })
-            console.log(risultato)
+            for (let i = 1; i<data.length; i++){
+                if ((i%2)!==0){
+                    risultato.push(data[i])
+                }
+            }
             return risultato
             break
-        case 8:
-            return data.reduce( (somma, e, i) => {
-                if ((i%2)===0){
-                    somma+=e
+        case 3:
+            risultato = []
+            for (let e of data){
+                if (e.length > 4){
+                    risultato.push(e.toUpperCase())
                 }
-                return somma
-            })
-        case 9:
-            return data
-                .filter( e => (e%2)!==0)
-                .reduce( (somma, e) => somma+=e)
-        case 10:
-            return data.sort()
-        case 11:
-            console.log(data.sort())
-            return (data.sort()).map(e => e.toLowerCase())
+            }
+            return risultato
+            break
+        case 4:
+            risultato = []
+            for (let e of data){
+                if (e[e.length-1] === "E"){
+                    risultato.push(e.toLowerCase())
+                }
+            }
+            return risultato
+            break
+        case 5:
+            risultato = []
+            for (let i in data){
+                risultato.push(data[i]-i)
+            }
+            return risultato
+            break
+        case 6:
+            let n
+            let max = Math.max(...data)
+            removeItemOnce(data, max)
+            n = Math.max(...data)
+            return n
+            break
+        case 7:
+            console.log(data)
+            let temp = data.split(" ")
+            for (let e of temp){
+                if (e[0] !== "a"){
+                    risultato.push(e)
+                }
+            }
+            return risultato
+            break
         default:
             console.log("esercizio non trovato")
     }
 }
+
+
+
+
 
 
 fetch(ipAddress+":8080/esercizi/"+process.argv[2].toString(), {
@@ -115,7 +125,3 @@ fetch(ipAddress+":8080/esercizi/"+process.argv[2].toString(), {
     .catch(err => console.log(err))
 })
 .catch(err => console.log(err))
-
-
-
-
